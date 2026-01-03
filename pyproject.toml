@@ -4,4 +4,34 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pyarrow>=22.0.0",
+    "python-okx>=0.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "ty>=0.0.1",
+]
+
+# --- Ruff Configuration ---
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+# E/W: Errors/Warnings, F: Pyflakes, I: Isort, B: Bugbear, UP: Pyupgrade
+select = ["E", "F", "I", "B", "UP", "N"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# --- Ty / Pyright Configuration ---
+[tool.pyright]
+include = ["src", "okx_historic_loader"] # Update to match your folder name
+typeCheckingMode = "standard" # Options: "off", "basic", "standard", "strict"
+pythonVersion = "3.14"
+reportMissingImports = true
+reportMissingTypeStubs = false
