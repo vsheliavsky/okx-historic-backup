@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from logging import getLogger
 
 from file_storage import StorageReader, StorageRouter
@@ -27,7 +27,7 @@ class BackupService:
             instrument_id=instrument_id
         )
 
-        yesterday_utc = datetime.now(tz=UTC).date() - timedelta(days=1)
+        yesterday_utc = datetime.now(tz=UTC).date()
         yesterday_midnight_utc = datetime(
             year=yesterday_utc.year,
             month=yesterday_utc.month,
@@ -41,10 +41,11 @@ class BackupService:
         trades = self.trade_fetcher.yield_historical_trades(
             instrument_id=instrument_id,
             after=yesterday_midnight_utc_timestamp,
-            before=latest_stored_trade_id,
         )
 
-        self.storage_router.process_trades(trades=trades)
+        self.storage_router.process_trades(
+            trades=trades, latest_stored_trade_id=latest_stored_trade_id
+        )
         logger.info(f"Backup completed for instrument {instrument_id}")
 
     def backup_all_instruments(self, instrument_ids: Iterable[InstrumentId]):

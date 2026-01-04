@@ -1,10 +1,10 @@
 from collections import defaultdict
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from logging import getLogger
 
 import pyarrow as pa
-from utilities.custom_types import Trade
+from utilities.custom_types import Trade, TradeId
 
 from .storage_writers.storage_writer_protocol import StorageWriter
 
@@ -18,15 +18,25 @@ class StorageRouter:
         self.buffers = defaultdict(list)
         self.current_date = date(year=1970, month=1, day=1)
 
-    def process_trades(self, trades: Iterable[Trade]):
+    def process_trades(
+        self, trades: Iterable[Trade], latest_stored_trade_id: TradeId | None
+    ):
         try:
             for trade in trades:
+                if trade["tradeId"] == latest_stored_trade_id:
+                    logger.info(
+                        f"Reached latest stored trade_id: {latest_stored_trade_id}."
+                    )
+                    break
+
                 # Route by date
-                trade_date = datetime.fromtimestamp(int(trade["ts"]) / 1_000).date()
+                trade_date = datetime.fromtimestamp(
+                    int(trade["ts"]) / 1_000, tz=UTC
+                ).date()
                 if trade_date != self.current_date:
                     logger.info(f"Flushing and switching to buffer for {trade_date}")
                     self._flush(trade_date=self.current_date)
-                    self.storage_writer.close(trade_date=trade_date)
+                    self.storage_writer.close(trade_date=self.current_date)
                     self.current_date = trade_date
 
                 self.buffers[trade_date].append(trade)
@@ -34,6 +44,7 @@ class StorageRouter:
                 # Chunk check
                 if len(self.buffers[trade_date]) >= self.chunk_size:
                     self._flush(trade_date=trade_date)
+
         except Exception as e:
             logger.error(f"Error processing trades: {e}")
             raise

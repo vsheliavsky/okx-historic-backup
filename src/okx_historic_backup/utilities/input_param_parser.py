@@ -24,17 +24,9 @@ def parse_input_args(defaults: dict) -> CLIArgs:
         help="Fetch data older than this tradeId",
     )
 
-    parser.add_argument(
-        "--before",
-        type=str,
-        default=None,
-        help="Fetch data newer than this tradeId",
-    )
-
     args = parser.parse_args()
 
     return CLIArgs(
         instrument_ids=args.instrument_ids,
         after=args.after,
-        before=args.before,
     )

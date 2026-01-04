@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, NotRequired, TypedDict
+from enum import Enum
+from typing import Any
 
 type InstrumentId = str
 type TradeId = str
@@ -9,16 +10,14 @@ type Trade = dict[str, Any]
 type Trades = list[Trade]
 
 
-class HistoricalTradeFetchParams(TypedDict):
-    instId: InstrumentId
-    after: NotRequired[TradeId | _Timestamp]
-    before: NotRequired[TradeId]
-
-
 @dataclass
 class CLIArgs:
     """Structured container for parsed arguments."""
 
     instrument_ids: Iterable[InstrumentId]
     after: TradeId | _Timestamp | None
-    before: TradeId | None
+
+
+class QueryParamTypeEnum(Enum):
+    TradeId = "1"
+    _Timestamp = "2"
