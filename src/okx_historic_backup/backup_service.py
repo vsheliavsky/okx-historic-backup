@@ -1,18 +1,24 @@
+from collections.abc import Iterable
 from datetime import UTC, datetime, timedelta
 from logging import getLogger
 
 from file_storage import StorageReader, StorageRouter
-
-from .okx_trade_fetcher import OKXTradeFetcher
+from okx_trade_fetcher import OKXTradeFetcher
+from utilities.custom_types import InstrumentId
 
 logger = getLogger(__name__)
 
 
 class BackupService:
-    def __init__(self, storage_router: StorageRouter, storage_reader: StorageReader):
+    def __init__(
+        self,
+        storage_router: StorageRouter,
+        storage_reader: StorageReader,
+        trade_fetcher: OKXTradeFetcher,
+    ):
         self.storage_router = storage_router
         self.storage_reader = storage_reader
-        self.trade_fetcher = OKXTradeFetcher()
+        self.trade_fetcher = trade_fetcher
 
     def _backup_instrument(self, instrument_id: str):
         logger.info(f"Starting backup for instrument {instrument_id}")
@@ -29,7 +35,7 @@ class BackupService:
             tzinfo=UTC,
         )
         yesterday_midnight_utc_timestamp = str(
-            yesterday_midnight_utc.timestamp() * 1_000
+            int(yesterday_midnight_utc.timestamp() * 1_000)
         )
 
         trades = self.trade_fetcher.yield_historical_trades(
@@ -41,6 +47,6 @@ class BackupService:
         self.storage_router.process_trades(trades=trades)
         logger.info(f"Backup completed for instrument {instrument_id}")
 
-    def backup_all_instruments(self, instrument_ids: list[str]):
+    def backup_all_instruments(self, instrument_ids: Iterable[InstrumentId]):
         for instrument_id in instrument_ids:
             self._backup_instrument(instrument_id=instrument_id)

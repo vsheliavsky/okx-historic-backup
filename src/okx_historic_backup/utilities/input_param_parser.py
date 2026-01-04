@@ -11,6 +11,7 @@ def parse_input_args(defaults: dict) -> CLIArgs:
     parser.add_argument(
         "--instrument_ids",
         type=str,
+        default=defaults["api_params"]["instrument_ids"],
         choices=defaults["api_params"]["instrument_ids"],
         help="The OKX instrument ID (e.g., BTC-USDT)",
         nargs="+",

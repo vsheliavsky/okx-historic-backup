@@ -20,5 +20,5 @@ class CLIArgs:
     """Structured container for parsed arguments."""
 
     instrument_ids: Iterable[InstrumentId]
-    after: str | None
-    before: str | None
+    after: TradeId | _Timestamp | None
+    before: TradeId | None

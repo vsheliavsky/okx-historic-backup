@@ -3,4 +3,4 @@ instrument_ids = ["BTC-USDT"]
 
 [file_storage]
 chunk_size = 2000
-base_local_path = "~/_backups_/raw_data/okx/historical_trades"
+base_dir = "~/_backups_/raw_data/okx/historical_trades"

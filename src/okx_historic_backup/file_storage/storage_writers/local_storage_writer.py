@@ -30,5 +30,4 @@ class LocalStorageWriter:
     def close(self):
         logger.info("Closing all writers")
         for w in self.writers.values():
-            if w.is_open:
-                w.close()
+            w.close()

@@ -1,3 +1,4 @@
+import os
 from logging import getLogger
 from pathlib import Path
 
@@ -10,7 +11,7 @@ logger = getLogger(__name__)
 
 class LocalStorageReader:
     def __init__(self, base_dir: str):
-        self.base_dir = base_dir
+        self.base_dir = os.path.expanduser(base_dir)
 
     def _get_latest_file_name(self, instrument_id: InstrumentId) -> str | None:
         """Navigates instrument_id/year/month/day.parquet to find the most recent file.
