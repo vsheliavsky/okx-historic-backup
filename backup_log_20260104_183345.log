@@ -1,0 +1,49 @@
+2026-01-04 18:33:45,969 [INFO] BackupSystem: Starting OKX Historic Backup Tool
+2026-01-04 18:33:46,230 [INFO] backup_service: Starting backup for instrument BTC-USDT
+2026-01-04 18:33:46,283 [INFO] file_storage.storage_readers.local_storage_reader: Latest parquet file for BTC-USDT is /home/vasko/_backups_/raw_data/okx/historical_trades/BTC-USDT/2026/1/4.parquet
+2026-01-04 18:33:46,315 [ERROR] file_storage.storage_readers.local_storage_reader: Error reading latest tradeId: Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.
+2026-01-04 18:33:46,316 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1767398400000 before None
+2026-01-04 18:33:46,740 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1767398400000 "HTTP/2 200 OK"
+2026-01-04 18:33:46,751 [INFO] file_storage.storage_router: Flushing and switching to buffer for 2026-01-04
+2026-01-04 18:33:46,752 [INFO] file_storage.storage_router: No records to flush for 1970-01-01
+2026-01-04 18:33:46,752 [INFO] file_storage.storage_writers.local_storage_writer: Closing writer 2026-01-04
+2026-01-04 18:33:46,752 [INFO] file_storage.storage_writers.local_storage_writer: Writer 2026-01-04 not found among active writers
+2026-01-04 18:33:46,753 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064968 before None
+2026-01-04 18:33:47,144 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064968 "HTTP/2 200 OK"
+2026-01-04 18:33:47,146 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064868 before None
+2026-01-04 18:33:47,548 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064868 "HTTP/2 200 OK"
+2026-01-04 18:33:47,550 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064768 before None
+2026-01-04 18:33:47,961 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064768 "HTTP/2 200 OK"
+2026-01-04 18:33:47,964 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064668 before None
+2026-01-04 18:33:48,369 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064668 "HTTP/2 200 OK"
+2026-01-04 18:33:48,372 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064568 before None
+2026-01-04 18:33:48,779 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064568 "HTTP/2 200 OK"
+2026-01-04 18:33:48,781 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064468 before None
+2026-01-04 18:33:49,195 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064468 "HTTP/2 200 OK"
+2026-01-04 18:33:49,198 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064368 before None
+2026-01-04 18:33:49,605 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064368 "HTTP/2 200 OK"
+2026-01-04 18:33:49,610 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064268 before None
+2026-01-04 18:33:50,019 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064268 "HTTP/2 200 OK"
+2026-01-04 18:33:50,020 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064168 before None
+2026-01-04 18:33:50,422 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064168 "HTTP/2 200 OK"
+2026-01-04 18:33:50,423 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138064068 before None
+2026-01-04 18:33:50,830 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138064068 "HTTP/2 200 OK"
+2026-01-04 18:33:50,832 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063968 before None
+2026-01-04 18:33:51,071 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063968 "HTTP/2 200 OK"
+2026-01-04 18:33:51,075 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063868 before None
+2026-01-04 18:33:51,445 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063868 "HTTP/2 200 OK"
+2026-01-04 18:33:51,448 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063768 before None
+2026-01-04 18:33:52,056 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063768 "HTTP/2 200 OK"
+2026-01-04 18:33:52,059 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063668 before None
+2026-01-04 18:33:52,324 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063668 "HTTP/2 200 OK"
+2026-01-04 18:33:52,328 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063568 before None
+2026-01-04 18:33:52,674 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063568 "HTTP/2 200 OK"
+2026-01-04 18:33:52,676 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063468 before None
+2026-01-04 18:33:53,085 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063468 "HTTP/2 200 OK"
+2026-01-04 18:33:53,088 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063368 before None
+2026-01-04 18:33:53,493 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063368 "HTTP/2 200 OK"
+2026-01-04 18:33:53,495 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063268 before None
+2026-01-04 18:33:53,903 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063268 "HTTP/2 200 OK"
+2026-01-04 18:33:53,905 [INFO] okx_trade_fetcher: Fetching trades for BTC-USDT after 1138063168 before None
+2026-01-04 18:33:54,310 [INFO] httpx: HTTP Request: GET https://www.okx.com/api/v5/market/history-trades?instId=BTC-USDT&after=1138063168 "HTTP/2 200 OK"
+2026-01-04 18:33:54,359 [INFO] file_storage.storage_router: Flushing 2000 BTC-USDT records for 2026-01-04

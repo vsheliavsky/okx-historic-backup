@@ -13,23 +13,34 @@ logger = getLogger(__name__)
 
 class StorageRouter:
     def __init__(self, storage_writer: StorageWriter, chunk_size: int):
-        self.storage = storage_writer
+        self.storage_writer = storage_writer
         self.chunk_size = chunk_size
         self.buffers = defaultdict(list)
+        self.current_date = date(year=1970, month=1, day=1)
 
     def process_trades(self, trades: Iterable[Trade]):
-        for trade in trades:
-            # Route by date
-            trade_date = datetime.fromtimestamp(int(trade["ts"]) / 1_000).date()
-            self.buffers[trade_date].append(trade)
+        try:
+            for trade in trades:
+                # Route by date
+                trade_date = datetime.fromtimestamp(int(trade["ts"]) / 1_000).date()
+                if trade_date != self.current_date:
+                    logger.info(f"Flushing and switching to buffer for {trade_date}")
+                    self._flush(trade_date=self.current_date)
+                    self.storage_writer.close(trade_date=trade_date)
+                    self.current_date = trade_date
 
-            # Chunk check
-            if len(self.buffers[trade_date]) >= self.chunk_size:
-                self._flush(trade_date=trade_date)
+                self.buffers[trade_date].append(trade)
 
-        # Final cleanup
-        self._flush_all()
-        self.storage.close()
+                # Chunk check
+                if len(self.buffers[trade_date]) >= self.chunk_size:
+                    self._flush(trade_date=trade_date)
+        except Exception as e:
+            logger.error(f"Error processing trades: {e}")
+            raise
+        finally:
+            # Final cleanup - ensure writer is closed even if error occurs
+            self._flush_all()
+            self.storage_writer.close_all()
 
     def _flush(self, trade_date: date):
         if not self.buffers[trade_date]:
@@ -39,17 +50,13 @@ class StorageRouter:
         table = pa.Table.from_pylist(self.buffers[trade_date])
 
         instrument_id = self.buffers[trade_date][0]["instId"]
-        file_name = (
-            f"{instrument_id}/{trade_date.year}/"
-            + f"{trade_date.month}/{trade_date.day}.parquet"
-        )
 
         logger.info(
             f"Flushing {len(self.buffers[trade_date])} "
             + f"{instrument_id} records for {trade_date}"
         )
 
-        self.storage.write(table=table, file_name=file_name)
+        self.storage_writer.write(table=table, trade_date=trade_date)
 
         logger.info(f"Clearing buffer for {trade_date}")
         self.buffers[trade_date] = []
