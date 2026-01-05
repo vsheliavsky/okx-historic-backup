@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import tomllib
 from datetime import datetime
@@ -8,15 +9,29 @@ import httpx
 
 
 def setup_logging(level=logging.INFO) -> logging.Logger:
+    # 1. Create the logs directory if it doesn't exist
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)
+
+    # 2. Define the log file path
     log_filename = f"backup_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    log_path = os.path.join(log_dir, log_filename)
 
-    log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    log_format = "%(asctime)s | [%(levelname)s] | %(name)s: %(message)s"
 
+    # 3. Configure the root logger
     logging.basicConfig(
         level=level,
         format=log_format,
-        handlers=[logging.FileHandler(log_filename), logging.StreamHandler(sys.stdout)],
+        handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
     )
+
+    # 4. Silence httpx unless the global level is DEBUG
+    # If the user passed INFO, httpx will be set to WARNING
+    if level > logging.DEBUG:
+        logging.getLogger("httpx").setLevel(logging.WARNING)
+    else:
+        logging.getLogger("httpx").setLevel(logging.DEBUG)
 
     return logging.getLogger("BackupSystem")
 
