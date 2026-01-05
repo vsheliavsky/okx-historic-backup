@@ -1,4 +1,4 @@
-from collections.abc import Generator
+from collections.abc import Generator, Sequence
 from logging import getLogger
 
 from okx.MarketData import MarketAPI
@@ -84,6 +84,20 @@ class OKXTradeFetcher:
         stop=stop_after_attempt(MAX_ATTEMPTS),
         reraise=True,
     )
+    def _fetch_single_page(
+        self,
+        instrument_id: InstrumentId,
+        after: TradeId | _Timestamp,
+        type: QueryParamTypeEnum,
+    ) -> Sequence[Trade] | None:
+        logger.info(f"Fetching trades for {instrument_id} after {after}")
+
+        response = self.api.get_history_trades(
+            instId=instrument_id, after=after, type=type.value
+        )
+
+        return response.get("data", None)
+
     def yield_historical_trades(
         self,
         instrument_id: InstrumentId,
@@ -91,13 +105,10 @@ class OKXTradeFetcher:
     ) -> Generator[Trade]:
         type = QueryParamTypeEnum._Timestamp
         while True:
-            logger.info(f"Fetching trades for {instrument_id} after {after}")
-
-            response = self.api.get_history_trades(
-                instId=instrument_id, after=after, type=type.value
+            trades = self._fetch_single_page(
+                instrument_id=instrument_id, after=after, type=type
             )
 
-            trades = response.get("data", [])
             if not trades:
                 break
 

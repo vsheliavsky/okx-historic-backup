@@ -16,6 +16,7 @@ okx-backup = "okx_historic_backup.main:main"
 
 [dependency-groups]
 dev = [
+    "pytest>=9.0.2",
     "ruff>=0.9.0",
 ]
 
@@ -39,3 +40,26 @@ typeCheckingMode = "standard" # Options: "off", "basic", "standard", "strict"
 pythonVersion = "3.14"
 reportMissingImports = true
 reportMissingTypeStubs = false
+
+# --- Pytest Configuration ---
+[tool.pytest.ini_options]
+# Specifies where pytest should look for tests by default
+testpaths = ["tests"]
+
+# Ensures pytest can find your source code without manual PYTHONPATH hacks
+# Added "src" assuming a standard src-layout, or "." if your package is in the root
+pythonpath = ["src"]
+
+# Standard options: 
+# -ra: show extra test summary info for all except passed
+# --strict-markers: raise error on unregistered markers
+# --import-mode=importlib: the modern, recommended import mechanism
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--import-mode=importlib",
+]
+
+# Configure logging for tests if needed
+log_cli = true
+log_cli_level = "INFO"
