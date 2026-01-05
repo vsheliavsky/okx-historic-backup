@@ -3,14 +3,14 @@ from logging import getLogger
 
 from okx.MarketData import MarketAPI
 from retrying import retry
-from utilities.custom_types import (
+from okx_historic_backup.utilities.custom_types import (
     InstrumentId,
     QueryParamTypeEnum,
     Trade,
     TradeId,
     _Timestamp,
 )
-from utilities.helpers import load_defaults
+from okx_historic_backup.utilities.helpers import load_defaults
 
 logger = getLogger(__name__)
 API_DEFAULTS = load_defaults()["api_params"]

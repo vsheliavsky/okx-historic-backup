@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
-from utilities.custom_types import InstrumentId, TradeId
+from okx_historic_backup.utilities.custom_types import InstrumentId, TradeId
 
 logger = getLogger(__name__)
 

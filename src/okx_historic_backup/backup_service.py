@@ -2,9 +2,9 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 from logging import getLogger
 
-from file_storage import StorageReader, StorageRouter
-from okx_trade_fetcher import OKXTradeFetcher
-from utilities.custom_types import InstrumentId
+from okx_historic_backup.file_storage import StorageReader, StorageRouter
+from okx_historic_backup.okx_trade_fetcher import OKXTradeFetcher
+from okx_historic_backup.utilities.custom_types import InstrumentId
 
 logger = getLogger(__name__)
 

@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from utilities.custom_types import InstrumentId, TradeId
+from okx_historic_backup.utilities.custom_types import InstrumentId, TradeId
 
 
 class StorageReader(Protocol):

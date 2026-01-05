@@ -1,8 +1,12 @@
-from backup_service import BackupService
-from file_storage import LocalStorageReader, LocalStorageWriter, StorageRouter
-from okx_trade_fetcher import OKXTradeFetcher
-from utilities.helpers import load_defaults, setup_logging
-from utilities.input_param_parser import parse_input_args
+from okx_historic_backup.backup_service import BackupService
+from okx_historic_backup.file_storage import (
+    LocalStorageReader,
+    LocalStorageWriter,
+    StorageRouter,
+)
+from okx_historic_backup.okx_trade_fetcher import OKXTradeFetcher
+from okx_historic_backup.utilities.helpers import load_defaults, setup_logging
+from okx_historic_backup.utilities.input_param_parser import parse_input_args
 
 
 def main():

@@ -6,7 +6,7 @@ from uuid import uuid7
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-from utilities.custom_types import InstrumentId
+from okx_historic_backup.utilities.custom_types import InstrumentId
 
 logger = getLogger(__name__)
 
