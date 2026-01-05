@@ -12,6 +12,22 @@ logger = getLogger(__name__)
 
 
 class StorageRouter:
+    """Routes and buffers trade data to storage based on dates and chunk sizes.
+
+    This class manages the lifecycle of trade data ingestion, ensuring that trades
+    are grouped by their execution date and written to storage using a provided
+    StorageWriter implementation. It handles memory buffering and triggers
+    flushes when a buffer reaches a specified chunk size or when the date changes.
+
+    Attributes:
+        storage_writer (StorageWriter): The backend writer responsible for data
+            persistence.
+        chunk_size (int): Maximum number of records to hold in memory before flushing.
+        buffers (dict): A mapping of dates to lists of trade dictionaries.
+        current_date (date): The date currently being processed to detect date
+            boundaries.
+    """
+
     def __init__(self, storage_writer: StorageWriter, chunk_size: int):
         self.storage_writer = storage_writer
         self.chunk_size = chunk_size
@@ -21,6 +37,22 @@ class StorageRouter:
     def process_trades(
         self, trades: Iterable[Trade], latest_stored_trade_id: TradeId | None
     ):
+        """Iterates through trades, routing them to date-specific buffers and flushing.
+
+        This method processes an iterable of trades. If it encounters a `trade_id`
+        that matches the `latest_stored_trade_id`, it stops processing.
+        It detects when a trade belongs to a new date, triggers a flush/close for the
+        previous date, and manages chunk-based flushes.
+
+        Args:
+            trades: An iterable collection of trade dictionaries.
+            latest_stored_trade_id: The ID of the last successfully stored trade.
+                Used to prevent processing duplicate historical data.
+
+        Raises:
+            Exception: Re-raises any exception encountered during processing after
+                attempting to flush remaining buffers and close writers.
+        """
         try:
             for trade in trades:
                 if trade["tradeId"] == latest_stored_trade_id:
@@ -54,6 +86,12 @@ class StorageRouter:
             self.storage_writer.close_all()
 
     def _flush(self, trade_date: date):
+        """Converts buffered data for a specific date into a PyArrow Table and writes
+        it.
+
+        Args:
+            trade_date: The specific date key in the buffer to be flushed.
+        """
         if not self.buffers[trade_date]:
             logger.info(f"No records to flush for {trade_date}")
             return
@@ -73,5 +111,7 @@ class StorageRouter:
         self.buffers[trade_date] = []
 
     def _flush_all(self):
+        """Iterates through all existing buffers and flushes them to the storage
+        writer."""
         for trade_date in list(self.buffers.keys()):
             self._flush(trade_date=trade_date)

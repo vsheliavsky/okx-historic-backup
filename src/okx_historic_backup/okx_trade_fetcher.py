@@ -19,6 +19,46 @@ WAIT_TIME_SEC = API_DEFAULTS["wait_time_sec"]
 
 
 class OKXTradeFetcher:
+    """
+    Fetcher for historical trades from OKX.
+
+    This class handles pagination and retry logic for fetching historical trades
+    for a given instrument, yielding trades one at a time to keep memory usage low.
+
+    Attributes:
+        api (MarketAPI): The OKX Market API instance used to fetch trade data.
+
+    Methods:
+        yield_historical_trades(instrument_id, after):
+            Generator that yields historical trades for an instrument, starting
+            from a specified trade ID or timestamp and moving backward in time.
+
+            Args:
+                instrument_id (InstrumentId): The OKX instrument identifier
+                    (e.g., "BTC-USDT").
+                after (TradeId | _Timestamp): The trade ID or timestamp to fetch
+                    trades older than. On initial call, this is a _Timestamp;
+                    on subsequent iterations, it's updated to the last trade ID
+                    in the previous batch for pagination.
+
+            Yields:
+                Trade: Dictionary containing trade data with normalized fields:
+                    - sz (float): Trade size
+                    - px (float): Trade price
+                    - ts (int): Trade timestamp
+                    - All other fields from the API response
+
+            Raises:
+                Retries on failure up to MAX_ATTEMPTS times with WAIT_TIME_SEC
+                between attempts before raising the exception.
+
+            Note:
+                The OKX 'after' parameter fetches trades older than the specified
+                value, while 'before' fetches newer trades. Pagination uses tradeId
+                after the first batch, then continues until no more trades are
+                returned.
+    """
+
     def __init__(
         self,
         market_api: MarketAPI | None = None,
@@ -33,8 +73,6 @@ class OKXTradeFetcher:
     ) -> Generator[Trade]:
         type = QueryParamTypeEnum._Timestamp
         while True:
-            # OKX 'after' parameter is the tradeId/_Timestamp to fetch data older than,
-            # while before is newer than
             logger.info(f"Fetching trades for {instrument_id} after {after}")
 
             response = self.api.get_history_trades(

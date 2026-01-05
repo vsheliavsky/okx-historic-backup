@@ -10,6 +10,14 @@ logger = getLogger(__name__)
 
 
 class BackupService:
+    """Service responsible for backing up historical trading data for financial
+    instruments.
+
+    This service orchestrates the backup process by coordinating between storage
+    operations, data retrieval, and persistence. It fetches historical trades for
+    instruments and stores them using the configured storage backend.
+    """
+
     def __init__(
         self,
         storage_router: StorageRouter,
@@ -21,6 +29,23 @@ class BackupService:
         self.trade_fetcher = trade_fetcher
 
     def _backup_instrument(self, instrument_id: str):
+        """
+        Backup historical trades for a specific instrument since yesterday midnight UTC.
+
+        Retrieves the latest stored trade ID for the instrument, fetches all trades
+        that occurred between the latest stored trade ID and yesterday midnight UTC,
+        and processes them through the storage router to persist new trades.
+
+        Args:
+            instrument_id (str): The unique identifier of the instrument to backup.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: May raise exceptions from storage_reader, trade_fetcher, or
+                       storage_router if operations fail.
+        """
         logger.info(f"Starting backup for instrument {instrument_id}")
 
         latest_stored_trade_id = self.storage_reader.get_latest_trade_id(
@@ -49,5 +74,15 @@ class BackupService:
         logger.info(f"Backup completed for instrument {instrument_id}")
 
     def backup_all_instruments(self, instrument_ids: Iterable[InstrumentId]):
+        """
+        Backup all instruments in the provided collection.
+
+        Args:
+            instrument_ids (Iterable[InstrumentId]): An iterable collection of
+                instrument IDs to be backed up.
+
+        Returns:
+            None
+        """
         for instrument_id in instrument_ids:
             self._backup_instrument(instrument_id=instrument_id)
