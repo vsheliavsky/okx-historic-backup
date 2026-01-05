@@ -15,7 +15,8 @@ class CLIArgs:
     """Structured container for parsed arguments."""
 
     instrument_ids: Iterable[InstrumentId]
-    after: TradeId | _Timestamp | None
+    start_at: TradeId | _Timestamp | None
+    stop_at: TradeId | None
 
 
 class QueryParamTypeEnum(Enum):

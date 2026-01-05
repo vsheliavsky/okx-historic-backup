@@ -34,37 +34,32 @@ class StorageRouter:
         self.buffers = defaultdict(list)
         self.current_date = date(year=1970, month=1, day=1)
 
-    def process_trades(
-        self, trades: Iterable[Trade], latest_stored_trade_id: TradeId | None
-    ):
+    def process_trades(self, trades: Iterable[Trade], stop_at: TradeId | None):
         """Iterates through trades, routing them to date-specific buffers and flushing.
 
         This method processes an iterable of trades. If it encounters a `trade_id`
-        that matches the `latest_stored_trade_id`, it stops processing.
+        that matches the `stop_at`, it stops processing.
         It detects when a trade belongs to a new date, triggers a flush/close for the
         previous date, and manages chunk-based flushes.
 
         Args:
             trades: An iterable collection of trade dictionaries.
-            latest_stored_trade_id: The ID of the last successfully stored trade.
-                Used to prevent processing duplicate historical data.
-
+            stop_at: The id where iteration should stop.
         Raises:
             Exception: Re-raises any exception encountered during processing after
                 attempting to flush remaining buffers and close writers.
         """
         try:
             for trade in trades:
-                if trade["tradeId"] == latest_stored_trade_id:
-                    logger.info(
-                        f"Reached latest stored trade_id: {latest_stored_trade_id}."
-                    )
+                if trade["tradeId"] == stop_at:
+                    logger.info(f"Reached sentinel value(stop_at): {stop_at}.")
                     break
 
                 # Route by date
                 trade_date = datetime.fromtimestamp(
                     int(trade["ts"]) / 1_000, tz=UTC
                 ).date()
+
                 if trade_date != self.current_date:
                     logger.info(f"Flushing and switching to buffer for {trade_date}")
                     self._flush(trade_date=self.current_date)

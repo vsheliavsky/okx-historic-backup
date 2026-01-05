@@ -1,11 +1,11 @@
 import os
-from datetime import date
+from datetime import date, datetime
 from logging import getLogger
 from pathlib import Path
-from uuid import uuid7
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+
 from okx_historic_backup.utilities.custom_types import InstrumentId
 
 logger = getLogger(__name__)
@@ -33,7 +33,7 @@ class LocalStorageWriter:
         """Writes a PyArrow Table to a date-specific Parquet file.
 
         The file path is automatically generated using the pattern:
-        `{base_dir}/{instrument_id}/{year}/{month}/{day}_{uuid7}.parquet`.
+        `{base_dir}/{instrument_id}/{year}/{month}/{day}_{timestamp_now}.parquet`.
         If a writer for the given date does not exist, a new one is initialized
         and the necessary directory structure is created.
 
@@ -46,9 +46,10 @@ class LocalStorageWriter:
              of the provided table.
         """
         instrument_id: InstrumentId = table.column("instId")[0].as_py()
+        timestamp_now = int(datetime.now().timestamp() * 1_000)
         file_name = (
             f"{instrument_id}/{trade_date.year}/"
-            + f"{trade_date.month}/{trade_date.day}_{uuid7()}.parquet"
+            + f"{trade_date.month}/{trade_date.day}_{timestamp_now}.parquet"
         )
         logger.info(f"Saving table to {file_name}")
 

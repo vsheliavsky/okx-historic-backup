@@ -2,7 +2,13 @@ from collections.abc import Generator
 from logging import getLogger
 
 from okx.MarketData import MarketAPI
-from retrying import retry
+from tenacity import (
+    retry,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential,
+)
+
 from okx_historic_backup.utilities.custom_types import (
     InstrumentId,
     QueryParamTypeEnum,
@@ -10,12 +16,17 @@ from okx_historic_backup.utilities.custom_types import (
     TradeId,
     _Timestamp,
 )
-from okx_historic_backup.utilities.helpers import load_defaults
+from okx_historic_backup.utilities.helpers import (
+    is_retryable_httpx_error,
+    load_defaults,
+)
 
 logger = getLogger(__name__)
 API_DEFAULTS = load_defaults()["api_params"]
 MAX_ATTEMPTS = API_DEFAULTS["max_attempts"]
-WAIT_TIME_SEC = API_DEFAULTS["wait_time_sec"]
+MIN_TIME_SEC = API_DEFAULTS["min_time_sec"]
+MAX_TIME_SEC = API_DEFAULTS["max_time_sec"]
+MULTIPLIER = API_DEFAULTS["multiplier"]
 
 
 class OKXTradeFetcher:
@@ -65,7 +76,14 @@ class OKXTradeFetcher:
     ):
         self.api = market_api or MarketAPI()
 
-    @retry(stop_max_attempt_number=MAX_ATTEMPTS, wait_fixed=WAIT_TIME_SEC)
+    @retry(
+        retry=retry_if_exception(is_retryable_httpx_error),
+        wait=wait_exponential(
+            multiplier=MULTIPLIER, min=MIN_TIME_SEC, max=MAX_TIME_SEC
+        ),
+        stop=stop_after_attempt(MAX_ATTEMPTS),
+        reraise=True,
+    )
     def yield_historical_trades(
         self,
         instrument_id: InstrumentId,

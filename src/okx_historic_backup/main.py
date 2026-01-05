@@ -15,7 +15,7 @@ def main():
 
     defaults = load_defaults()
 
-    input_params = parse_input_args(defaults)
+    cli_args = parse_input_args(defaults)
 
     storage_router = StorageRouter(
         storage_writer=LocalStorageWriter(
@@ -32,7 +32,7 @@ def main():
         trade_fetcher=OKXTradeFetcher(),
     )
 
-    backup_service.backup_all_instruments(instrument_ids=input_params.instrument_ids)
+    backup_service.backup_all_instruments(cli_args=cli_args)
 
 
 if __name__ == "__main__":

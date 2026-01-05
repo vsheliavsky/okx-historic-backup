@@ -5,9 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "httpx>=0.28.1",
     "pyarrow>=22.0.0",
     "python-okx>=0.4.0",
-    "retrying>=1.4.2",
+    "tenacity>=9.1.2",
 ]
 
 [project.scripts]
@@ -16,7 +17,6 @@ okx-backup = "okx_historic_backup.main:main"
 [dependency-groups]
 dev = [
     "ruff>=0.9.0",
-    "ty>=0.0.1",
 ]
 
 # --- Ruff Configuration ---

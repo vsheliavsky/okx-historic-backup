@@ -4,7 +4,12 @@ from logging import getLogger
 
 from okx_historic_backup.file_storage import StorageReader, StorageRouter
 from okx_historic_backup.okx_trade_fetcher import OKXTradeFetcher
-from okx_historic_backup.utilities.custom_types import InstrumentId
+from okx_historic_backup.utilities.custom_types import (
+    InstrumentId,
+    TradeId,
+    _Timestamp,
+    CLIArgs,
+)
 
 logger = getLogger(__name__)
 
@@ -28,7 +33,22 @@ class BackupService:
         self.storage_reader = storage_reader
         self.trade_fetcher = trade_fetcher
 
-    def _backup_instrument(self, instrument_id: str):
+    def _get_start(self) -> _Timestamp:
+        yesterday_utc = datetime.now(tz=UTC).date()
+        yesterday_midnight_utc = datetime(
+            year=yesterday_utc.year,
+            month=yesterday_utc.month,
+            day=yesterday_utc.day,
+            tzinfo=UTC,
+        )
+        return str(int(yesterday_midnight_utc.timestamp() * 1_000))
+
+    def _backup_instrument(
+        self,
+        instrument_id: InstrumentId,
+        stop_at: TradeId | None,
+        start_at: TradeId | _Timestamp | None,
+    ):
         """
         Backup historical trades for a specific instrument since yesterday midnight UTC.
 
@@ -37,7 +57,7 @@ class BackupService:
         and processes them through the storage router to persist new trades.
 
         Args:
-            instrument_id (str): The unique identifier of the instrument to backup.
+            instrument_id (str): The unique identifier of the instrument to backup. # TODO: amend
 
         Returns:
             None
@@ -46,43 +66,35 @@ class BackupService:
             Exception: May raise exceptions from storage_reader, trade_fetcher, or
                        storage_router if operations fail.
         """
-        logger.info(f"Starting backup for instrument {instrument_id}")
 
-        latest_stored_trade_id = self.storage_reader.get_latest_trade_id(
+        start_at = start_at or self._get_start()
+        stop_at = stop_at or self.storage_reader.get_latest_trade_id(
             instrument_id=instrument_id
         )
-
-        yesterday_utc = datetime.now(tz=UTC).date()
-        yesterday_midnight_utc = datetime(
-            year=yesterday_utc.year,
-            month=yesterday_utc.month,
-            day=yesterday_utc.day,
-            tzinfo=UTC,
-        )
-        yesterday_midnight_utc_timestamp = str(
-            int(yesterday_midnight_utc.timestamp() * 1_000)
-        )
+        logger.info(f"Starting backup for instrument {instrument_id}")
 
         trades = self.trade_fetcher.yield_historical_trades(
             instrument_id=instrument_id,
-            after=yesterday_midnight_utc_timestamp,
+            after=start_at,
         )
 
-        self.storage_router.process_trades(
-            trades=trades, latest_stored_trade_id=latest_stored_trade_id
-        )
+        self.storage_router.process_trades(trades=trades, stop_at=stop_at)
         logger.info(f"Backup completed for instrument {instrument_id}")
 
-    def backup_all_instruments(self, instrument_ids: Iterable[InstrumentId]):
+    def backup_all_instruments(self, cli_args: CLIArgs):
         """
         Backup all instruments in the provided collection.
 
         Args:
-            instrument_ids (Iterable[InstrumentId]): An iterable collection of
+            instrument_ids (Iterable[InstrumentId]): An iterable collection of  # TODO: amend
                 instrument IDs to be backed up.
 
         Returns:
             None
         """
-        for instrument_id in instrument_ids:
-            self._backup_instrument(instrument_id=instrument_id)
+        for instrument_id in cli_args.instrument_ids:
+            self._backup_instrument(
+                instrument_id=instrument_id,
+                start_at=cli_args.start_at,
+                stop_at=cli_args.stop_at,
+            )

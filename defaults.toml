@@ -1,7 +1,9 @@
 [api_params]
 instrument_ids = ["BTC-USDT"]
-max_attempts = 3
-wait_time_sec = 2
+max_attempts = 12
+min_time_sec = 2
+max_time_sec = 30
+multiplier = 1 
 
 [file_storage]
 chunk_size = 2000
