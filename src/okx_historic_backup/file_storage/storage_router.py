@@ -4,6 +4,7 @@ from datetime import UTC, date, datetime
 from logging import getLogger
 
 import pyarrow as pa
+
 from okx_historic_backup.utilities.custom_types import Trade, TradeId
 
 from .storage_writers.storage_writer_protocol import StorageWriter

@@ -1,14 +1,13 @@
-from collections.abc import Iterable
 from datetime import UTC, datetime
 from logging import getLogger
 
 from okx_historic_backup.file_storage import StorageReader, StorageRouter
 from okx_historic_backup.okx_trade_fetcher import OKXTradeFetcher
 from okx_historic_backup.utilities.custom_types import (
+    CLIArgs,
     InstrumentId,
     TradeId,
     _Timestamp,
-    CLIArgs,
 )
 
 logger = getLogger(__name__)
